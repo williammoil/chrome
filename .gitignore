@@ -1,0 +1,7 @@
+build
+debug
+clang-newlib
+node_modules
+.idea
+*.pem
+*.crx

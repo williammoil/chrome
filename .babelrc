@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "modern"
+  ],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "transform-flow-strip-types"
+  ]
+}

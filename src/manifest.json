@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "name": "CTox",
+  "version": "0.0.0",
+  "description": "Google Chrome client for Tox",
+  "author": {
+    "name": "CTox Team"
+  },
+  "default_locale": "en",
+  "app": {
+    "background": {
+      "page": "process.html"
+    }
+  },
+  "minimum_chrome_version": "42.0.2283.0",
+  "icons": {
+    "16": "resources/icons/extension_16.png",
+    "32": "resources/icons/extension_32.png",
+    "48": "resources/icons/extension_48.png",
+    "64": "resources/icons/extension_64.png",
+    "96": "resources/icons/extension_96.png",
+    "128": "resources/icons/extension_128.png"
+  },
+  "permissions": [
+    "audio",
+    "audioCapture",
+    "background",
+    "idle",
+    "fullscreen",
+    "notifications",
+    "storage",
+    "videoCapture",
+    {
+      "socket": [
+        "tcp-listen:*:*",
+        "tcp-connect:*:*",
+        "udp-bind:*:*",
+        "udp-send-to:*:*",
+        "resolve-host",
+        "resolve-proxy"
+      ]
+    }
+  ],
+  "sockets": {
+    "udp": {
+      "send": "*",
+      "bind": "*"
+    },
+    "tcp" : {
+      "connect": "*"
+    },
+    "tcpServer" : {
+      "listen": "*"
+    }
+  }
+}
