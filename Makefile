@@ -6,6 +6,11 @@ TARGET = ctox
 LIBS = ppapi_cpp ppapi pthread toxcore sodium opus vpx nacl_io
 
 CFLAGS = -Wall -std=gnu++11
+
+ifeq ($(CONFIG),Debug)
+    CFLAGS+= -DDEBUG
+endif
+
 SOURCES = src/nacl/ctox.cpp \
           src/nacl/tox/core.cpp \
           src/nacl/tox/settings.cpp \

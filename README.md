@@ -43,7 +43,7 @@ The minimum requirements to build the library are:
 
 Before you can build the app with the Native Client SDK toolchain, you must
 set the `NACL_SDK_ROOT` environment variable to top directory of a version of the
-Pepper API (the directory containing `toolchain/`). This path should be absolute.
+Pepper API (the directory containing `toolchain/`). This path should be absolute
 
 ```
 export NACL_SDK_ROOT=<INSTALLATION_DIR>/nacl_sdk/pepper_<VERSION>
@@ -60,7 +60,14 @@ directory automatically
 $ sh build.sh
 ```
 
-Run the gulpfile to build the source code and to package a `.crx` file into the project's
+By default all builds are in debug configuration. If you want to build release
+packages add the `--release` flag
+
+```sh
+$ sh build.sh --release
+```
+
+Now run the gulpfile to build the source code and to package a `.crx` file into the project's
 root directory, which is the actual app that can be installed
 
 ```sh
@@ -70,7 +77,7 @@ $ npm run build
 ## Installing
 
 You can either install the packaged `.crx` file from the project's root directory or
-load an unpacked extension from `build/<VERSION>` directory (recommended). Please notice,
+load an unpacked extension from `build/<VERSION>` (recommended). Please notice,
 that you'll need to launch Chrome with debug flags in order to use to use POSIX-like
 sockets (`nacl_io`) locally.
 

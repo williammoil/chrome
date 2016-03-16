@@ -187,11 +187,15 @@ gulp.task('bundle', function (debug, callback) {
 /**
  * Copy NaCl modules.
  */
-gulp.task('nacl', function () {
+gulp.task('nacl', function (debug) {
   // Define the target directory
   const targetDir = `${buildDir}/nacl`
 
-  return gulp.src([ `!${__dirname}/clang-newlib/Release/*_unstripped_*.nexe`, `${__dirname}/clang-newlib/Release/*.nexe`, `${__dirname}/clang-newlib/Release/*.nmf` ])
+  return gulp.src([
+    `!${__dirname}/clang-newlib/${debug ? 'Debug' : 'Release'}/*_unstripped_*.nexe`,
+    `${__dirname}/clang-newlib/${debug ? 'Debug' : 'Release'}/*.nexe`,
+    `${__dirname}/clang-newlib/${debug ? 'Debug' : 'Release'}/*.nmf`
+  ])
     // Specify the output destination
     .pipe(gulp.dest(function(file) {
       file.path = file.base + path.basename(file.path);
