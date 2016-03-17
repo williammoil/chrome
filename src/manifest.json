@@ -30,6 +30,7 @@
     "notifications",
     "storage",
     "videoCapture",
+    "unlimitedStorage",
     {
       "socket": [
         "tcp-listen:*:*",

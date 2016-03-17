@@ -17,6 +17,7 @@ CToxInstance::CToxInstance(PP_Instance instance) : pp::Instance(instance),
     fprintf(stderr, "Initializing\n");
 
     nacl_io_init_ppapi(instance, pp::Module::Get()->get_browser_interface());
+    mount("", "/persistent", "html5fs", 0, "type=PERSISTENT,expected_size=1048576");
 }
 
 CToxInstance::~CToxInstance() { }

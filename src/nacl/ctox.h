@@ -1,6 +1,8 @@
 #ifndef CTOX_H
 #define CTOX_H
 
+#include <sys/mount.h>
+
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/module.h"
