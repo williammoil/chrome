@@ -60,7 +60,7 @@ namespace CToxTox {
 
         void BootstrapNodes();
 
-        void BootstrapNode(const char *address, int port, const uint8_t *hexKey);
+        void BootstrapNode(const char *address, int port, const uint8_t *binKey);
 
     };
 }

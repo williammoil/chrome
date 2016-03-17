@@ -6,7 +6,7 @@ struct bootstrap_node {
     std::string ipv4;
     std::string ipv6;
     unsigned short port;
-    std::string pgp_public_key;
+    const char pgp_public_key[TOX_PUBLIC_KEY_SIZE * 2 + 1];
 };
 
 Core::Core() {
@@ -120,14 +120,15 @@ Tox_Options *Core::GetToxOptions() {
     options->savedata_type = TOX_SAVEDATA_TYPE_NONE;
 
     // TODO: Add proxy and read settings
-    options->udp_enabled = false;
-    options->ipv6_enabled = true;
+    options->udp_enabled = true;
+    options->ipv6_enabled = false;
 
     return options;
 }
 
 bool Core::Connect() {
     Tox_Options *options = GetToxOptions();
+
     if (options == NULL)
         return false;
 
@@ -158,8 +159,6 @@ bool Core::Connect() {
         } else {
             fprintf(stderr, "Tox connect error: Undefined error\n");
         }
-
-        //ShowNotification(ToxErrorToString(initError), TranslateT("Unable to initialize Tox core"), MB_ICONERROR);
 
         tox_options_free(options);
         return false;
@@ -341,12 +340,13 @@ void Core::BootstrapNodes() {
 
         std::string host = bootstrap_nodes[index].ipv4;
         int port = bootstrap_nodes[index].port;
-        auto hexKey = HexToBin(bootstrap_nodes[index].pgp_public_key.c_str());
+        std::string pgpKey = bootstrap_nodes[index].pgp_public_key;
+        auto binKey = HexToBin(pgpKey.c_str());
 
         if (!host.empty()) {
             fprintf(stderr, "Bootstrapping %s %u (IPv4)\n", host.c_str(), port);
 
-            BootstrapNode(host.c_str(), port, hexKey.data());
+            BootstrapNode(host.c_str(), port, binKey.data());
         }
 
         host = bootstrap_nodes[index].ipv6;
@@ -354,20 +354,20 @@ void Core::BootstrapNodes() {
         if (!host.empty()) {
             fprintf(stderr, "Bootstrapping %s %u (IPv6)\n", host.c_str(), port);
 
-            BootstrapNode(host.c_str(), port, hexKey.data());
+            BootstrapNode(host.c_str(), port, binKey.data());
         }
     }
 
     fprintf(stderr, "Bootstrap nodes refreshed\n");
 }
 
-void Core::BootstrapNode(const char *address, int port, const uint8_t *hexKey) {
+void Core::BootstrapNode(const char *address, int port, const uint8_t *binKey) {
     TOX_ERR_BOOTSTRAP errorBootstrap;
 
     if (!tox_bootstrap(toxThread_->tox_,
                        address,
                        port,
-                       hexKey,
+                       binKey,
                        &errorBootstrap)) {
         if (errorBootstrap == TOX_ERR_BOOTSTRAP_NULL) {
             fprintf(stderr, "UDP bootstrap error: Missing host or missing pgp key\n");
@@ -385,7 +385,7 @@ void Core::BootstrapNode(const char *address, int port, const uint8_t *hexKey) {
     if (!tox_add_tcp_relay(toxThread_->tox_,
                            address,
                            port,
-                           hexKey,
+                           binKey,
                            &errorBootstrap)) {
         if (errorBootstrap == TOX_ERR_BOOTSTRAP_NULL) {
             fprintf(stderr, "TCP bootstrap error: Missing host or missing pgp key\n");
@@ -402,9 +402,9 @@ void Core::BootstrapNode(const char *address, int port, const uint8_t *hexKey) {
 }
 
 std::vector <uint8_t> Core::HexToBin(std::string const &hex) {
-    std::vector <uint8_t> bin(hex.size() / 2, 0);
-    if (sodium_hex2bin(bin.data(), bin.size(), hex.data(), hex.size(), NULL,
-                       NULL, NULL) != 0) {
+    std::vector <uint8_t> bin(TOX_PUBLIC_KEY_SIZE, 0);
+
+    if (sodium_hex2bin(bin.data(), bin.size(), hex.data(), hex.size(), NULL, NULL, NULL) != 0) {
         throw std::runtime_error("Error in Core::HexToBin(std::string)");
     }
 
