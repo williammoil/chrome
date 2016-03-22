@@ -1,10 +1,13 @@
-#ifndef CHROME_GITHUB_COM_THREAD_H
-#define CHROME_GITHUB_COM_THREAD_H
+#ifndef CTOX_TOX_THREAD_H
+#define CTOX_TOX_THREAD_H
+
+#include <iostream>
 
 #include <tox/tox.h>
 #include <tox/toxav.h>
 
 namespace CToxTox {
+
     class Thread {
     public:
         Tox *tox_;
@@ -12,20 +15,13 @@ namespace CToxTox {
         bool isConnected;
         bool isTerminated;
 
-        Thread() : tox_(NULL), toxav_(NULL), isConnected(false), isTerminated(false) { }
+        Thread();
 
-        void Run() {
-            {
-                tox_iterate(tox_);
-                //if (toxAV)
-                //	toxav_iterate(toxAV);
-            }
+        ~Thread();
 
-            uint32_t interval = tox_iteration_interval(tox_);
-            usleep(interval * 1000);
-        }
+        void Run();
 
-        void Abort() { isTerminated = true; }
+        void Abort();
     };
 }
 
