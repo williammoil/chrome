@@ -11,7 +11,8 @@ ifeq ($(CONFIG),Debug)
     CFLAGS+= -DDEBUG
 endif
 
-SOURCES = src/nacl/ctox.cpp \
+SOURCES = src/nacl/module.cpp \
+          src/nacl/instance.cpp \
           src/nacl/tox/core.cpp \
           src/nacl/tox/settings.cpp \
 

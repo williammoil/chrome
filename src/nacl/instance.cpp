@@ -1,7 +1,12 @@
 #include <cstdio>
 #include <errno.h>
+#include <sys/mount.h>
 
-#include "ctox.h"
+#include "nacl_io/nacl_io.h"
+#include "ppapi/c/pp_errors.h"
+#include "ppapi/cpp/module.h"
+
+#include "instance.h"
 
 using namespace CTox;
 
@@ -11,23 +16,32 @@ namespace CTox {
 };
 
 CToxInstance::CToxInstance(PP_Instance instance) : pp::Instance(instance),
-                                                       pp_core_(pp::Module::Get()->core()),
-                                                       callback_factory_(this),
-                                                       worker_thread_(this) {
-    fprintf(stderr, "Initializing\n");
+                                                   pp_core_(pp::Module::Get()->core()),
+                                                   callback_factory_(this),
+                                                   worker_thread_(this) { }
 
-    nacl_io_init_ppapi(instance, pp::Module::Get()->get_browser_interface());
-    mount("", "/persistent", "html5fs", 0, "type=PERSISTENT,expected_size=1048576");
+CToxInstance::~CToxInstance() {
+    umount( FS_PATH);
+    nacl_io_uninit();
 }
 
-CToxInstance::~CToxInstance() { }
+bool CToxInstance::Init(uint32_t argc,
+                        const char *argn[],
+                        const char *argv[]) {
 
-bool CToxInstance::Init(uint32_t /*argc*/,
-                          const char * /*argn*/ [],
-                          const char * /*argv*/ []) {
-    worker_thread_.Start();
+    int naclError = nacl_io_init_ppapi(pp_instance(), pp::Module::Get()->get_browser_interface());
 
-    return true;
+    if (naclError != PP_OK) {
+        fprintf(stderr, "Failed to initialize nacl_io");
+    }
+
+    int mountError = mount("", FS_PATH, "html5fs", 0, "type=PERSISTENT,expected_size=1048576");
+
+    if (mountError != 0) {
+        fprintf(stderr, "Failed to mount html5fs");
+    }
+
+    return worker_thread_.Start();
 }
 
 
@@ -76,8 +90,8 @@ void CToxInstance::Configure(int32_t /*result*/) {
 }
 
 void CToxInstance::SendResponse(const int request_id,
-                                  const std::string &status,
-                                  const pp::VarDictionary &data) {
+                                const std::string &status,
+                                const pp::VarDictionary &data) {
     pp::CompletionCallback callback = callback_factory_.NewCallback(&CToxInstance::SendResponseAsJSONObject,
                                                                     request_id,
                                                                     status,
@@ -87,9 +101,9 @@ void CToxInstance::SendResponse(const int request_id,
 }
 
 void CToxInstance::SendResponseAsJSONObject(int32_t result,
-                                              const int request_id,
-                                              const std::string &status,
-                                              const pp::VarDictionary &data) {
+                                            const int request_id,
+                                            const std::string &status,
+                                            const pp::VarDictionary &data) {
     fprintf(stderr, "Create JSON response\n");
 
     // Create the response dictionary
@@ -109,11 +123,3 @@ void CToxInstance::SendResponseAsJSONObject(int32_t result,
 //std::shared_ptr <CToxTox::Core> &CToxInstance::ToxCoreInstance() {
 //    return tox_core_instance_;
 //}
-
-CToxModule::CToxModule() : pp::Module() { }
-
-CToxModule::~CToxModule() { }
-
-pp::Instance *CToxModule::CreateInstance(PP_Instance instance) {
-    return new CToxInstance(instance);
-}
