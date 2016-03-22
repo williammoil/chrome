@@ -34,5 +34,5 @@ echo "$(tput setaf 2)Launching Chrome$(tput sgr 0)"
 # launch chrome directly
 "$CHROME_DIR"/chrome --user-data-dir="$CHROME_DATA_DIR" --test-type --no-first-run --no-sandbox \
                      --load-extension="$(pwd)"/build/"$version" \
-                     --enable-logging=stdout --disable-default-apps \
-                     --allow-nacl-socket-api="http://127.0.0.1" --enable-nacl --vmodule=ppb*=4 \
+                     --enable-logging=stderr --disable-default-apps \
+                     --enable-nacl --vmodule=ppb*=4
