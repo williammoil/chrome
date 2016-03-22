@@ -41,17 +41,5 @@
         "resolve-proxy"
       ]
     }
-  ],
-  "sockets": {
-    "udp": {
-      "send": "*",
-      "bind": "*"
-    },
-    "tcp" : {
-      "connect": "*"
-    },
-    "tcpServer" : {
-      "listen": "*"
-    }
-  }
+  ]
 }
