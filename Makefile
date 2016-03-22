@@ -3,7 +3,7 @@ include $(NACL_SDK_ROOT)/tools/common.mk
 VALID_TOOLCHAINS := clang-newlib
 
 TARGET = ctox
-LIBS = ppapi_cpp ppapi pthread toxcore sodium opus vpx nacl_io
+LIBS = toxcore sodium opus vpx nacl_io ppapi_cpp ppapi pthread
 
 CFLAGS = -Wall -std=gnu++11
 
